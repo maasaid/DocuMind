@@ -1,3 +1,4 @@
+'''
 from flask import Flask,request
 from langchain_ollama import OllamaLLM
 from langchain.document_loaders import PDFPlumberLoader
@@ -10,9 +11,7 @@ from langchain.prompts import PromptTemplate
 from langchain.chains import create_retrieval_chain
 
 app=Flask(__name__)
-
 model=OllamaLLM(model="llama3.1")
-
 prompt=PromptTemplate.from_template(
     """ 
     <s>[INST] You are a technical assistant good at searching docuemnts. If you do not have an answer from the provided information say so. [/INST] </s>
@@ -31,6 +30,11 @@ text_splitter = RecursiveCharacterTextSplitter(
     is_separator_regex=False  # Whether to treat separators as regex
 )
 
+@app.route("/signUp",methods=["POST"])
+def signUp():
+    pass
+
+#Start the project
 @app.route("/ai",methods=["POST"])
 def ai():
     json_content=request.json
@@ -38,8 +42,6 @@ def ai():
     response=model.invoke(query)
     response_return={"answer":response}
     return response_return
-
-
 @app.route("/upload",methods=["POST"])
 def uploadPdf():
     file=request.files["file"]
@@ -50,12 +52,10 @@ def uploadPdf():
     loader=PDFPlumberLoader(save_file)
     print("succesful loaded with PDFPlumber")
     document =loader.load_and_split()
-  
     chunk=text_splitter.split_documents(document)
     vector_store = Chroma.from_documents(
         documents=chunk, embedding=embedding, persist_directory=folder_path
     )
-
     vector_store.persist()
     response = {
         "status": "Successfully Uploaded",
@@ -89,7 +89,6 @@ def askAboutPdf():
     return response_answer
 
 
-
 def start_app():
     app.run(host="0.0.0.0", port=8080, debug=True)
 
@@ -97,3 +96,4 @@ def start_app():
 if __name__ == "__main__":
     start_app()
 
+'''
